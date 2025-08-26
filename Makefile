@@ -1,3 +1,12 @@
+WORKER_IMAGE_TAG?=invoker-worker
+
+.PHONY: build-and-push-worker-image
+build-and-push-worker-image: build-worker-image push-worker-image
+
 .PHONY: build-worker-image
 build-worker-image:
-	docker build -t invoker-worker -f ./worker/Dockerfile .
+	docker build -t $(WORKER_IMAGE_TAG) -f ./worker/Dockerfile .
+
+.PHONY: push-worker-image
+push-worker-image:
+	docker push $(WORKER_IMAGE_TAG)
