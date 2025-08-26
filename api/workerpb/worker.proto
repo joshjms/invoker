@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package workerpb;
+option go_package = "api/workerpb";
+
+service WorkerService {
+    rpc Work(WorkRequest) returns (WorkResponse);
+}
+
+message WorkRequest {
+    int64 duration_ms = 1;
+}
+
+message WorkResponse {
+    int64 start_at = 1;
+    int64 end_at = 2;
+}
