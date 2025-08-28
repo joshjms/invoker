@@ -20,9 +20,12 @@ func (s *workerServer) Work(ctx context.Context, req *workerpb.WorkRequest) (*wo
 	startTime := time.Now()
 	duration := time.Duration(req.GetDurationMs()) * time.Millisecond
 
+	timer := time.NewTimer(duration)
+	defer timer.Stop()
+
 	for {
 		select {
-		case <-time.After(time.Duration(duration) * time.Millisecond):
+		case <-timer.C:
 			return &workerpb.WorkResponse{
 				StartAt: startTime.UnixMilli(),
 				EndAt:   time.Now().UnixMilli(),
