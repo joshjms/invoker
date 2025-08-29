@@ -1,5 +1,9 @@
 WORKER_IMAGE_TAG?=invoker-worker
 
+.PHONY: build
+build:
+	go build -o bin/invoker main.go
+
 .PHONY: build-and-push-worker-image
 build-and-push-worker-image: build-worker-image push-worker-image
 
