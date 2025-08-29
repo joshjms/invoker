@@ -27,8 +27,8 @@ func (s *workerServer) Work(ctx context.Context, req *workerpb.WorkRequest) (*wo
 		select {
 		case <-timer.C:
 			return &workerpb.WorkResponse{
-				StartAt: startTime.UnixMilli(),
-				EndAt:   time.Now().UnixMilli(),
+				StartAt: startTime.UnixNano(),
+				EndAt:   time.Now().UnixNano(),
 			}, nil
 		default:
 		}
