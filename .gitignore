@@ -1,2 +1,7 @@
 bin/
 *.log
+
+# Visualization Python env
+visualization/venv/
+visualization/__pycache__/
+visualization/*.pyc
