@@ -21,13 +21,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	rps          int
-	durationMs   int64
-	distribution string
-	endpoint     string
-)
-
 var rootCmd = &cobra.Command{
 	Use:   "invoker [command]",
 	Short: "invoker generates load on a knative function",

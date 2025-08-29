@@ -5,8 +5,18 @@ package cmd
 
 import (
 	"fmt"
+	"log"
+	"os"
 
+	"github.com/joshjms/invoker/invoker"
 	"github.com/spf13/cobra"
+)
+
+var (
+	rps          int
+	durationMs   int64
+	distribution string
+	outputPath   string
 )
 
 // runCmd represents the run command
@@ -23,14 +33,47 @@ to quickly create a Cobra application.`,
 }
 
 func RunFunc(cmd *cobra.Command, args []string) {
-	fmt.Println("run called")
+	var distributionOpt invoker.Distribution
+
+	switch distribution {
+	case "uniform":
+		distributionOpt = invoker.DistributionUniform
+	case "poisson":
+		distributionOpt = invoker.DistributionPoisson
+	default:
+		log.Fatalf("invalid distribution\n")
+	}
+
+	opts := invoker.InvokerOptions{
+		Rps:          rps,
+		Distribution: distributionOpt,
+		DurationMs:   durationMs,
+		Endpoint:     args[0],
+	}
+
+	inv := invoker.NewInvoker(opts)
+	reports, err := inv.Run()
+	if err != nil {
+		log.Fatalf("failed to run invoker: %v\n", err)
+	}
+
+	f, err := os.OpenFile(outputPath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+	if err != nil {
+		log.Fatalf("failed to open output file: %v\n", err)
+	}
+	defer f.Close()
+
+	for _, report := range reports {
+		if _, err := fmt.Fprintf(f, "%d,%d,%d,%d\n", report.RequestAt, report.WorkerStartAt, report.WorkerEndAt, report.ResponseAt); err != nil {
+			log.Fatalf("failed to write report: %v\n", err)
+		}
+	}
 }
 
 func init() {
 	rootCmd.AddCommand(runCmd)
 	runCmd.Flags().IntVarP(&rps, "rps", "r", 10, "Requests per second")
-	runCmd.Flags().Int64VarP(&durationMs, "duration", "d", 100, "Duration of the cpu-spin in ms")
+	runCmd.Flags().Int64VarP(&durationMs, "duration", "d", 50, "Duration of the cpu-spin in ms")
 	runCmd.Flags().StringVarP(&distribution, "distribution", "D", "uniform", "Distribution of the requests. Options: uniform, poisson")
-	runCmd.Flags().StringVarP(&endpoint, "endpoint", "e", "", "Worker endpoint")
-	runCmd.MarkFlagRequired("endpoint")
+	runCmd.Flags().StringVarP(&outputPath, "outputPath", "o", "invoke.log", "Path to the output file")
 }
