@@ -5,3 +5,5 @@ bin/
 visualization/venv/
 visualization/__pycache__/
 visualization/*.pyc
+
+reports/
