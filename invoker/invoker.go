@@ -42,16 +42,15 @@ func (inv *Invoker) runUniform() ([]Report, error) {
 
 	client := workerpb.NewWorkerServiceClient(conn)
 
-	rps := inv.Options.Rps
-
-	interval := time.Duration(1e9 / rps)
+	interval := time.Duration(1e9 / inv.Options.Rps)
 	ticker := time.NewTicker(interval)
 
 	wg := sync.WaitGroup{}
 	var mu sync.Mutex
 
 	reports := make([]Report, 0)
-	reqs := 0
+	reqs := int64(0)
+	totalReqs := inv.Options.RunTime * inv.Options.Rps / 1000
 
 	for range ticker.C {
 		wg.Add(1)
@@ -79,7 +78,7 @@ func (inv *Invoker) runUniform() ([]Report, error) {
 		}()
 		reqs++
 
-		if reqs >= rps {
+		if reqs >= totalReqs {
 			break
 		}
 	}

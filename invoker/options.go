@@ -1,7 +1,8 @@
 package invoker
 
 type InvokerOptions struct {
-	Rps          int
+	Rps          int64
+	RunTime      int64 // total duration of the run in ms
 	Distribution Distribution
 	DurationMs   int64 // duration of the cpu-spin in ms
 

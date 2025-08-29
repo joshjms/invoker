@@ -13,7 +13,8 @@ import (
 )
 
 var (
-	rps          int
+	rps          int64
+	runTimeMs    int64
 	durationMs   int64
 	distribution string
 	outputPath   string
@@ -46,6 +47,7 @@ func RunFunc(cmd *cobra.Command, args []string) {
 
 	opts := invoker.InvokerOptions{
 		Rps:          rps,
+		RunTime:      runTimeMs,
 		Distribution: distributionOpt,
 		DurationMs:   durationMs,
 		Endpoint:     args[0],
@@ -72,7 +74,8 @@ func RunFunc(cmd *cobra.Command, args []string) {
 
 func init() {
 	rootCmd.AddCommand(runCmd)
-	runCmd.Flags().IntVarP(&rps, "rps", "r", 10, "Requests per second")
+	runCmd.Flags().Int64VarP(&rps, "rps", "r", 10, "Requests per second")
+	runCmd.Flags().Int64VarP(&runTimeMs, "run_time", "t", 10000, "Total duration of the run in ms")
 	runCmd.Flags().Int64VarP(&durationMs, "duration", "d", 50, "Duration of the cpu-spin in ms")
 	runCmd.Flags().StringVarP(&distribution, "distribution", "D", "uniform", "Distribution of the requests. Options: uniform, poisson")
 	runCmd.Flags().StringVarP(&outputPath, "outputPath", "o", "invoke.log", "Path to the output file")
